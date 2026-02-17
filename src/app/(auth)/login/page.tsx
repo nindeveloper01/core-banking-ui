@@ -38,10 +38,10 @@ export default function LoginPage() {
         router.push(redirectUrl || '/dashboard')
       } else if (data.user.role === 'ADMIN') {
         console.log('[v0] Redirecting admin to staff dashboard')
-        router.push(redirectUrl || '/dashboard')
+        router.push(redirectUrl || '/staff')
       } else {
         console.log('[v0] Redirecting staff to dashboard')
-        router.push(redirectUrl || '/dashboard')
+        router.push(redirectUrl || '/staff')
       }
     } catch (err: any) {
       console.error('[v0] Login error:', err)
@@ -52,11 +52,11 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen flex items-center justify-center from-blue-50 to-indigo-100 p-4">
       <Card className="w-full max-w-md shadow-lg border-0">
-        <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
+        <CardHeader className="text-gray-700 rounded-t-lg">
           <CardTitle className="text-2xl">Banking Platform</CardTitle>
-          <CardDescription className="text-blue-100">
+          <CardDescription className="text-gray-700">
             Secure login for customers and staff
           </CardDescription>
         </CardHeader>

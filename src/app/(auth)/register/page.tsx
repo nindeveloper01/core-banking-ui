@@ -31,11 +31,11 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen flex items-center justify-center from-blue-50 to-indigo-100 p-4">
       <Card className="w-full max-w-md shadow-lg border-0">
-        <CardHeader className="bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-t-lg">
+        <CardHeader className="text-gray-700 rounded-t-lg">
           <CardTitle className="text-2xl">Create Account</CardTitle>
-          <CardDescription className="text-green-100">
+          <CardDescription className="text-gray-700">
             Join our banking platform
           </CardDescription>
         </CardHeader>
@@ -134,7 +134,7 @@ export default function RegisterPage() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-green-600 hover:bg-green-700 text-white"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             >
               {isLoading ? 'Creating account...' : 'Create Account'}
             </Button>
