@@ -1,4 +1,4 @@
-import { Account, Transaction, Loan, Customer, StaffMember, BankMetrics } from '@/types'
+import { Account, Transaction, Loan, Customer, StaffMember, BankMetrics } from '@/lib/types'
 
 // Mock Customers
 export const mockCustomers: Customer[] = [

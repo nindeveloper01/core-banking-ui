@@ -2,61 +2,76 @@
 
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import Link from 'next/link' 
+import Link from 'next/link'
+import { apiClient } from '@/services/api'
+import { useAuth } from '@/lib/auth-context'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Eye, EyeOff } from 'lucide-react'
-import { useAuth } from '@/lib/auth-context'
-import { apiClient } from '@/services/api'
 
 export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { setUser } = useAuth()
-  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+
+    // Client-side validation
+    if (phone.trim().length < 10) {
+      setError('Please enter a valid phone number (minimum 10 digits)')
+      return
+    }
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters')
+      return
+    }
+
     setIsLoading(true)
 
     try {
-      console.log('[v0] Login attempt with email:', email)
-      const data = await apiClient.login(email, password)
+      console.log('[v0] Login attempt with phone:', phone)
+      const data = await apiClient.login(phone, password)
       console.log('[v0] Login successful, user:', data.user)
       setUser(data.user)
 
       // Redirect based on user role
       const redirectUrl = searchParams.get('redirect')
       console.log('[v0] User role:', data.user.role, 'Redirect URL:', redirectUrl)
+
       if (data.user.role === 'CUSTOMER') {
-        router.push(redirectUrl || '/dashboard')
-      } else if (data.user.role === 'ADMIN') {
-        console.log('[v0] Redirecting admin to staff dashboard')
-        router.push(redirectUrl || '/staff')
+        router.push(redirectUrl || '/customer/dashboard')
+      } else if (data.user.role === 'ADMIN' || data.user.role === 'MANAGER') {
+        router.push(redirectUrl || '/staff/dashboard')
       } else {
-        console.log('[v0] Redirecting staff to dashboard')
-        router.push(redirectUrl || '/staff')
+        router.push(redirectUrl || '/staff/dashboard')
       }
     } catch (err: any) {
       console.error('[v0] Login error:', err)
-      setError(err.response?.data?.message || 'Login failed. Please try again.')
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        'Login failed. Please try again.'
+      setError(message)
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <Card className="w-full max-w-md shadow-lg border-0">
-        <CardHeader className="text-gray-700 rounded-t-lg">
+        <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
           <CardTitle className="text-2xl">Banking Platform</CardTitle>
-          <CardDescription className="text-gray-700">
+          <CardDescription className="text-blue-100">
             Secure login for customers and staff
           </CardDescription>
         </CardHeader>
@@ -69,18 +84,23 @@ export default function LoginPage() {
             )}
 
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-gray-700">
-                Email Address
+              <label htmlFor="phone" className="text-sm font-medium text-gray-700">
+                Phone Number
               </label>
               <Input
-                id="email"
-                type="email"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="phone"
+                type="tel"
+                placeholder="0122343443"  
+                value={phone}
+                onChange={(e) => {
+                  // Only allow digits
+                  const val = e.target.value.replace(/[^0-9]/g, '')
+                  setPhone(val)
+                }}
                 required
                 disabled={isLoading}
                 className="border-gray-300"
+                maxLength={11}
               />
             </div>
 
@@ -123,7 +143,6 @@ export default function LoginPage() {
             </Button>
 
             <div className="space-y-3 pt-4 border-t border-gray-200">
-            
               <div className="text-center text-sm space-y-2">
                 <div>
                   <Link

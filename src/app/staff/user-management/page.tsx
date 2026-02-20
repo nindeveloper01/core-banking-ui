@@ -22,7 +22,7 @@ import {
   Users as UserIcon
 } from 'lucide-react'
 import { mockStaff } from '@/data/mock-data'
-import { StaffMember } from '@/types'
+import { StaffMember } from '@/lib/types'
 
 const roleColors = {
   ADMIN: 'bg-red-100 text-red-800 border-red-300',

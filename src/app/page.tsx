@@ -14,7 +14,7 @@ export default function Home() {
     if (!isAuthenticated) {
       router.push('/login')
     } else if (user?.role === 'ADMIN') {
-      router.push('staff/dashboard')
+      router.push('/taff/dashboard')
     } else {
       router.push('/staff/dashboard')
     }
