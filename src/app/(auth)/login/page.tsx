@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Eye, EyeOff } from 'lucide-react'
+import RequiredStar from '@/components/ui/RequiredStarComponent'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -26,14 +27,14 @@ export default function LoginPage() {
     setError('')
 
     // Client-side validation
-    if (phone.trim().length < 10) {
-      setError('Please enter a valid phone number (minimum 10 digits)')
-      return
-    }
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters')
-      return
-    }
+    // if (phone.trim().length < 10) {
+    //   setError('Please enter a valid phone number (minimum 10 digits)')
+    //   return
+    // }
+    // if (password.length < 6) {
+    //   setError('Password must be at least 6 characters')
+    //   return
+    // }
 
     setIsLoading(true)
 
@@ -85,7 +86,7 @@ export default function LoginPage() {
 
             <div className="space-y-2">
               <label htmlFor="phone" className="text-sm font-medium text-gray-700">
-                Phone Number
+                Phone Number <RequiredStar />
               </label>
               <Input
                 id="phone"
@@ -106,7 +107,7 @@ export default function LoginPage() {
 
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium text-gray-700">
-                Password
+                Password <RequiredStar />
               </label>
               <div className="relative">
                 <Input

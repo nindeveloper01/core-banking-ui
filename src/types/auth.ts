@@ -15,3 +15,14 @@ export interface LoginResponse {
   token: string
   user: User
 }
+export interface RegisterPayload {
+  phoneNumber: string
+  email: string
+  pin: string
+  password: string
+  confirmedPassword: string
+  nationalCardId: string
+  name: string
+  gender: string
+  acceptTerm: boolean
+}

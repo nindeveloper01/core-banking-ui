@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { LoginResponse } from '@/types/auth'
+import { LoginResponse, RegisterPayload } from '@/types/auth'
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL // http://localhost:8080/api/v1
 
@@ -68,5 +68,73 @@ export const apiClient = {
   logout: () => {
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
+  },
+
+  // ── Register ───────────────────────────────────────────────────────────────
+
+  
+  /**
+   * Step 1 – Submit registration form.
+   * The server creates the account (unverified) and returns a success response.
+   */
+  register: async (payload: RegisterPayload): Promise<void> => {
+    // Log exactly what we're sending so you can compare with what the server expects
+    console.log('[api] Register payload:', JSON.stringify(payload, null, 2))
+
+    try {
+      const { data } = await axiosInstance.post('/auth/register', payload)
+      console.log('[api] Register response:', data)
+    } catch (err: any) {
+      // Log the full error so we can see every validation message from the server
+      console.error('[api] Register failed — status:', err.response?.status)
+      console.error('[api] Register failed — full body:', JSON.stringify(err.response?.data, null, 2))
+      throw err
+    }
+  },
+
+  /**
+   * Step 2 – Trigger the server to send a verification email.
+   * Called right after successful registration.
+   */
+  sendVerification: async (email: string): Promise<void> => {
+    try {
+      const { data } = await axiosInstance.post('/auth/send-verification', { email })
+      console.log('[api] Send verification response:', data)
+    } catch (err: any) {
+      console.error('[api] Send verification failed:', err.response?.status, err.response?.data)
+      throw err
+    }
+  },
+
+   verify: async (email: string, code: string): Promise<void> => {
+    // ✅ Changed field name from `verificationCode` → `token`
+    // Common alternatives if still 400: `otp`, `code`, `verificationCode`
+    const payload = { email, verifiedCode: code }
+    console.log('[api] Verify payload:', JSON.stringify(payload, null, 2))
+
+    try {
+      const { data } = await axiosInstance.post('/auth/verify', payload)
+      console.log('[api] Verify response:', data)
+    } catch (err: any) {
+      console.error('[api] Verify failed — status:', err.response?.status)
+      // ✅ Now logs the full body so you can see exactly what field name the server expects
+      console.error('[api] Verify failed — full body:', JSON.stringify(err.response?.data, null, 2))
+      throw err
+    }
+  },
+
+
+
+  /**
+   * Optional – Resend the verification email if the user didn't receive it.
+   */
+  resendVerification: async (email: string): Promise<void> => {
+    try {
+      const { data } = await axiosInstance.post('/auth/resend-verification', { email })
+      console.log('[api] Resend verification response:', data)
+    } catch (err: any) {
+      console.error('[api] Resend verification failed:', err.response?.status, err.response?.data)
+      throw err
+    }
   },
 }
