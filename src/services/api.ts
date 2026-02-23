@@ -1,5 +1,6 @@
 import axios from 'axios'
-import { LoginResponse, RegisterPayload } from '@/types/auth'
+import { AccountType,Account, Customer, GetAccountsParams, LoginResponse, RegisterPayload, SpringPage } from '@/types/auth'
+ 
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL // http://localhost:8080/api/v1
 
@@ -134,6 +135,41 @@ export const apiClient = {
       console.log('[api] Resend verification response:', data)
     } catch (err: any) {
       console.error('[api] Resend verification failed:', err.response?.status, err.response?.data)
+      throw err
+    }
+  },
+
+  getCustomers: async (): Promise<Customer[]> => { 
+    try {
+      const { data } = await axiosInstance.get<Customer[]>('/customers')
+      console.log( "[api] getCustomers response:", data)
+      return data
+    } catch (err: any) {
+      console.error('[api] getCustomers failed — status:', err.response?.status)
+      console.error('[api] getCustomers failed — full body:', JSON.stringify(err.response?.data, null, 2))
+      throw err
+    }
+  },
+  // getAccounts: async (): Promise<Account[]> => {
+  //     console.log('[api] getAccounts → /accounts')
+  //     try {
+  //       const { data } = await axiosInstance.get<Account[]>('/accounts')
+  //       console.log('[api] getAccounts — received', data.length, 'accounts')
+  //       return data
+  //     } catch (err: any) {
+  //       console.error('[api] getAccounts failed — status:', err.response?.status)
+  //       console.error('[api] getAccounts failed — full body:', JSON.stringify(err.response?.data, null, 2))
+  //       throw err // ✅ always rethrow so the caller can handle the error
+  //     }
+  //   },
+
+  
+  getAccounts: async (page = 0, size = 10): Promise<SpringPage<Account>> => {
+    const query = new URLSearchParams({ page: String(page), size: String(size) })
+    try {
+      const { data } = await axiosInstance.get<SpringPage<Account>>(`/accounts?${query}`)
+      return data
+    } catch (err: any) { 
       throw err
     }
   },

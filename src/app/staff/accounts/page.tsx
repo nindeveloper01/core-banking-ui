@@ -1,12 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { apiClient } from '@/services/api'
-import { Account } from '@/lib/types'
+import { apiClient } from '@/services/api' 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Loader2, ArrowRight } from 'lucide-react'
+import { Loader2, ArrowRight, Wallet } from 'lucide-react'
+import { Account } from '@/types/auth'
 
 export default function AccountsPage() {
   const [accounts, setAccounts] = useState<Account[]>([])
@@ -17,8 +15,8 @@ export default function AccountsPage() {
     const loadAccounts = async () => {
       try {
         setIsLoading(true)
-        const data = await apiClient.getAccounts()
-        setAccounts(data)
+        const page = await apiClient.getAccounts()
+        setAccounts(page.content) // ✅ extract from SpringPage
       } catch (err) {
         setError('Failed to load accounts')
         console.error(err)
@@ -26,26 +24,11 @@ export default function AccountsPage() {
         setIsLoading(false)
       }
     }
-
     loadAccounts()
   }, [])
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'bg-green-100 text-green-800'
-      case 'FROZEN':
-        return 'bg-blue-100 text-blue-800'
-      case 'CLOSED':
-        return 'bg-red-100 text-red-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
-
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900">My Accounts</h1>
         <p className="text-gray-600">View and manage all your accounts</p>
@@ -70,45 +53,38 @@ export default function AccountsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {accounts.map((account) => (
-            <Link key={account.id} href={`/customer/accounts/${account.id}`}>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
+            <Card key={account.actNo} className="hover:shadow-lg transition-shadow h-full">
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-2">
+                    <Wallet className="w-5 h-5 text-blue-600" />
                     <div>
-                      <CardTitle className="text-lg">
-                        {/* {account.type === 'SAVINGS' ? 'Savings Account' : 'Current Account'} */}
-                      </CardTitle>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Account No: {account.accountNumber}
-                      </p>
+                      <CardTitle className="text-lg">{account.accountType.name}</CardTitle>
+                      <p className="text-sm text-gray-500 mt-0.5">{account.actName}</p>
                     </div>
-                    <span
-                      className={`text-xs px-3 py-1 rounded-full font-medium ${getStatusColor(
-                        account.status
-                      )}`}
-                    >
-                      {account.status}
-                    </span>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">Balance</p>
-                    <p className="text-3xl font-bold text-blue-600">
-                      {account.currency === 'KHR' ? '៛' : '$'}
-                      {account.balance.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between pt-4 border-t">
-                    <span className="text-sm text-gray-600">{account.currency}</span>
-                    <ArrowRight className="w-4 h-4 text-gray-400" />
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
+                  <span className="text-xs px-3 py-1 rounded-full font-medium bg-blue-100 text-blue-800 capitalize">
+                    {account.alias}
+                  </span>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <p className="text-xs text-gray-500 mb-0.5">Account No</p>
+                  <p className="text-sm font-mono font-medium text-gray-800">{account.actNo}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Balance</p>
+                  <p className="text-3xl font-bold text-blue-600">
+                    ${account.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </p>
+                </div>
+                <div className="flex items-center justify-between pt-4 border-t">
+                  <span className="text-xs text-gray-500">{account.accountType.description}</span>
+                  <ArrowRight className="w-4 h-4 text-gray-400" />
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       )}

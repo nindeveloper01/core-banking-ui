@@ -34,10 +34,10 @@ export default function CustomersPage() {
       console.log('[v0] Loading customers...')
       setIsLoading(true)
       const data = await apiClient.getCustomers()
-      console.log('[v0] Raw customer data:', data)
+      console.log('Raw customer data:', data.data)
       const customersWithDetails = (data.data || data).map((customer: any) => {
-        const accounts = mockAccounts.filter((acc) => acc.customerId === customer.id)
-        console.log('[v0] Customer:', customer.id, 'Accounts found:', accounts.length)
+        const accounts = mockAccounts.filter((acc) => acc.customerId === customer.id) 
+        console.log("customer", customer.id, "accounts", accounts.length)
         return {
           ...customer,
           accountCount: accounts.length,
