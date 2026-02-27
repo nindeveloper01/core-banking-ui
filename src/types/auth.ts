@@ -5,12 +5,16 @@ export interface LoginRequest {
 }
 
 export interface User {
-  id: string        // from JWT: jti
-  phone: string     // from JWT: iss
-  name: string      // from JWT: studentId
-  role: string      // from JWT: scope → "ADMIN" | "CUSTOMER" | "MANAGER"
+  id: string
+  name: string
+  email: string
+  phone: string
+  role: 'ADMIN' | 'TELLER' | 'LOAN_OFFICER'
+  department: string
+  employeeType: string
+  isDeleted: boolean
+  createdAt: string
 }
-
 export interface LoginResponse {
   token: string
   user: User

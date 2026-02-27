@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { AccountType,Account, Customer, GetAccountsParams, LoginResponse, RegisterPayload, SpringPage } from '@/types/auth'
+import { AccountType,Account, Customer, GetAccountsParams, LoginResponse, RegisterPayload, SpringPage, User } from '@/types/auth'
  
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL // http://localhost:8080/api/v1
@@ -170,6 +170,17 @@ export const apiClient = {
       const { data } = await axiosInstance.get<SpringPage<Account>>(`/accounts?${query}`)
       return data
     } catch (err: any) { 
+      throw err
+    }
+  },
+  getUsers: async (page = 0, size = 10): Promise<SpringPage<User>> => {
+    const query = new URLSearchParams({ page: String(page), size: String(size) })
+    try {
+      const { data } = await axiosInstance.get<SpringPage<User>>(`/users?${query}`)
+      return data
+    } catch (err: any) {
+      console.error('[api] getUsers failed — status:', err.response?.status)
+      console.error('[api] getUsers failed — full body:', JSON.stringify(err.response?.data, null, 2))
       throw err
     }
   },
